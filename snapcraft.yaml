@@ -1,0 +1,65 @@
+name: gnome-font-viewer
+adopt-info: gnome-font-viewer
+summary: View fonts on your system
+description: |
+  GNOME Fonts shows you the fonts installed on your computer for your use as
+  thumbnails.
+  Selecting any thumbnails shows the full view of how the font would look under
+  various sizes.
+  
+  GNOME Fonts also supports installing new font files downloaded in the .ttf
+  and other formats.
+  Fonts may be installed only for your use or made available to all users on the computer.
+
+grade: stable # must be 'stable' to release into candidate/stable channels
+confinement: strict
+base: core18
+
+slots:
+  # for GtkApplication registration
+  gnome-font-viewer:
+    interface: dbus
+    bus: session
+    name: org.gnome.font-viewer
+
+apps:
+  gnome-font-viewer:
+    extensions: [gnome-3-34]
+    command: usr/bin/gnome-font-viewer
+    plugs:
+      - home
+    desktop: usr/share/applications/org.gnome.font-viewer.desktop
+
+parts:
+  gnome-font-viewer:
+    source: https://gitlab.gnome.org/GNOME/gnome-font-viewer.git
+    source-type: git
+    source-branch: gnome-3-34
+    override-pull: |
+      snapcraftctl pull
+      snapcraftctl set-version $(git describe --tags --abbrev=10)
+    override-build: |
+      snapcraftctl build
+      mkdir -p $SNAPCRAFT_PART_INSTALL/meta/gui/
+      cp snapbuild/src/org.gnome.font-viewer.desktop $SNAPCRAFT_PART_INSTALL/meta/gui/
+    plugin: meson
+    meson-parameters: [--prefix=/usr]
+    organize:
+      snap/gnome-font-viewer/current/usr: usr
+    build-packages:
+      - gettext
+      - itstool
+      - libfontconfig1-dev
+      - libfreetype6-dev
+
+  # Find files provided by the base and platform snap and ensure they aren't
+  # duplicated in this snap
+  cleanup:
+    after: [gnome-font-viewer]
+    plugin: nil
+    build-snaps: [core18, gtk-common-themes, gnome-3-34-1804]
+    override-prime: |
+      set -eux
+      for snap in "core18" "gtk-common-themes" "gnome-3-34-1804"; do
+        cd "/snap/$snap/current" && find . -type f,l -name *.so.* -exec rm -f "$SNAPCRAFT_PRIME/{}" \;
+      done

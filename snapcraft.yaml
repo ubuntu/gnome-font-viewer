@@ -6,14 +6,14 @@ description: |
   thumbnails.
   Selecting any thumbnails shows the full view of how the font would look under
   various sizes.
-  
+
   GNOME Fonts also supports installing new font files downloaded in the .ttf
   and other formats.
   Fonts may be installed only for your use or made available to all users on the computer.
 
 grade: stable # must be 'stable' to release into candidate/stable channels
 confinement: strict
-base: core20
+base: core22
 
 slots:
   # for GtkApplication registration
@@ -24,7 +24,7 @@ slots:
 
 apps:
   gnome-font-viewer:
-    extensions: [gnome-3-38]
+    extensions: [gnome]
     command: usr/bin/gnome-font-viewer
     plugs:
       - home
@@ -34,24 +34,23 @@ parts:
   gnome-font-viewer:
     source: https://gitlab.gnome.org/GNOME/gnome-font-viewer.git
     source-type: git
-    source-branch: gnome-41
+    source-tag: '42.0'
     override-pull: |
-      snapcraftctl pull
-      snapcraftctl set-version $(git describe --tags --abbrev=10)
+      craftctl default
+      craftctl set version=$(git describe --tags --abbrev=10)
     plugin: meson
-    meson-version: 0.59.2
-    meson-parameters: [--prefix=/usr]
-    organize:
-      snap/gnome-font-viewer/current/usr: usr
+    meson-parameters:
+      - --prefix=/usr
+      - --buildtype=release
 
   # Find files provided by the base and platform snap and ensure they aren't
   # duplicated in this snap
   cleanup:
     after: [gnome-font-viewer]
     plugin: nil
-    build-snaps: [core20, gtk-common-themes, gnome-3-38-2004]
+    build-snaps: [core22, gtk-common-themes, gnome-42-2204]
     override-prime: |
       set -eux
-      for snap in "core20" "gtk-common-themes" "gnome-3-38-2004"; do
-        cd "/snap/$snap/current" && find . -type f,l -name *.so.* -exec rm -f "$SNAPCRAFT_PRIME/{}" \;
+      for snap in "core22" "gtk-common-themes" "gnome-42-2204"; do
+        cd "/snap/$snap/current" && find . -type f,l -name *.so.* -exec rm -f "$CRAFT_PRIME/{}" \;
       done

@@ -34,7 +34,7 @@ parts:
   gnome-font-viewer:
     source: https://gitlab.gnome.org/GNOME/gnome-font-viewer.git
     source-type: git
-    source-tag: '42.0'
+    source-tag: '44.0'
     parse-info: [usr/share/metainfo/org.gnome.font-viewer.appdata.xml]
     override-pull: |
       craftctl default

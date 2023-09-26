@@ -34,7 +34,7 @@ parts:
   gnome-font-viewer:
     source: https://gitlab.gnome.org/GNOME/gnome-font-viewer.git
     source-type: git
-    source-tag: '44.0'
+    source-tag: '45.0'
     source-depth: 1
 # ext:updatesnap
 #   version-format:

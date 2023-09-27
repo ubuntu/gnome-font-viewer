@@ -48,6 +48,8 @@ parts:
     meson-parameters:
       - --prefix=/usr
       - --buildtype=release
+    build-packages:
+      - libsystemd-dev
 
   # Find files provided by the base and platform snap and ensure they aren't
   # duplicated in this snap
